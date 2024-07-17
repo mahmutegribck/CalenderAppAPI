@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CalenderApp.Application.Behaviors;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace CalenderApp.Application
@@ -12,7 +15,13 @@ namespace CalenderApp.Application
             //Features içerisindeki tüm işlemler MediatR Dependency Injection a eklendi.
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddValidatorsFromAssembly(assembly);
+
+            
+
             //services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
 
         }
     }

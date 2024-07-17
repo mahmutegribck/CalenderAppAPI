@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -11,9 +10,8 @@ using System.Globalization;
 namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalıkEtkinlikGetir
 {
     public class KullaniciHaftalıkEtkinlikGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciHaftalikEtkinlikGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciHaftalikEtkinlikGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
     {
         public async Task<IList<KullaniciEtkinligiGetirResponse>> Handle(KullaniciHaftalikEtkinlikGetirRequest request, CancellationToken cancellationToken)
         {
@@ -24,23 +22,36 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalı
             CalendarWeekRule calendarWeekRule = culture.DateTimeFormat.CalendarWeekRule;
             DayOfWeek firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
 
-            var haftaNumarasi = calendar.GetWeekOfYear(request.Tarih, calendarWeekRule, firstDayOfWeek);
+            int haftaNo = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(request.Tarih, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
             List<Etkinlik>? etkinlikler = await _calenderAppDbContext.Etkinliks
                 .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId &&
-                            e.BaslangicTarihi.Year == request.Tarih.Year)
+                            e.BaslangicTarihi.Year <= request.Tarih.Year &&
+                            e.BitisTarihi.Year >= request.Tarih.Year)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             if (etkinlikler.Count == 0) throw new Exception("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
 
             List<Etkinlik> filteredEtkinlikler = etkinlikler
-                .Where(e => calendar.GetWeekOfYear(e.BaslangicTarihi, calendarWeekRule, firstDayOfWeek) == haftaNumarasi)
+                .Where(e => calendar.GetWeekOfYear(e.BaslangicTarihi, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == haftaNo ||
+                            calendar.GetWeekOfYear(e.BitisTarihi, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == haftaNo ||
+                            (e.BaslangicTarihi <= request.Tarih && e.BitisTarihi >= request.Tarih))
                 .ToList();
 
             if (filteredEtkinlikler.Count == 0) throw new Exception("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
 
-            return _mapper.Map<IList<KullaniciEtkinligiGetirResponse>>(filteredEtkinlikler);
+            IList<KullaniciEtkinligiGetirResponse> response = filteredEtkinlikler.Select(e => new KullaniciEtkinligiGetirResponse
+            {
+                Id = e.Id,
+                Baslik = e.Baslik,
+                Aciklama = e.Aciklama,
+                BaslangicTarihi = e.BaslangicTarihi,
+                BitisTarihi = e.BitisTarihi,
+                TekrarDurumu = e.TekrarDurumu
+            }).ToList();
+
+            return response;
         }
     }
 }

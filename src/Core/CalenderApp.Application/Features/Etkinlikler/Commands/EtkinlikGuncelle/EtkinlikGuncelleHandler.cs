@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Domain.Entities;
+using CalenderApp.Domain.Enums;
 using CalenderApp.Persistence.Context;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -9,9 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle
 {
     public class EtkinlikGuncelleHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinlikGuncelleRequest>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinlikGuncelleRequest>
     {
         public async Task Handle(EtkinlikGuncelleRequest request, CancellationToken cancellationToken)
         {
@@ -28,11 +27,19 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle
                 (e.BaslangicTarihi <= request.BaslangicTarihi && (e.BitisTarihi < request.BitisTarihi || request.BitisTarihi <= e.BitisTarihi) && request.BaslangicTarihi <= e.BitisTarihi), cancellationToken);
 
             if (exist) throw new Exception("Girilen Tarih Araliginda Etkinlik Kaydi Bulunmaktadir.");
-            Etkinlik etkinlikGuncelle = _mapper.Map<Etkinlik>(request);
-            etkinlikGuncelle.OlusturanKullaniciId = mevcutKullaniciId;
+
+            Etkinlik etkinlikGuncelle = new()
+            {
+                Id = request.Id,
+                Baslik = request.Baslik,
+                Aciklama = request.Aciklama,
+                BaslangicTarihi = request.BaslangicTarihi,
+                BitisTarihi = request.BitisTarihi,
+                TekrarDurumu = request.TekrarDurumu,
+                OlusturanKullaniciId = mevcutKullaniciId
+            };
 
             if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.Id && e.OlusturanKullaniciId == mevcutKullaniciId, cancellationToken)) throw new Exception("Guncellenecek Etkinlik Kaydi Bulunamadi.");
-
 
             _calenderAppDbContext.Update(etkinlikGuncelle);
             await _calenderAppDbContext.SaveChangesAsync(cancellationToken);

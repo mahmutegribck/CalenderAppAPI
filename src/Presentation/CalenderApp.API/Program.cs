@@ -1,7 +1,12 @@
 using CalenderApp.Application;
+using CalenderApp.Application.Behaviors;
 using CalenderApp.Infrastructure;
 using CalenderApp.Persistence;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +19,12 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
 builder.Services.AddApplication();
 
 

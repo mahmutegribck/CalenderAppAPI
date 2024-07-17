@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -9,16 +8,12 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur
 {
     public class EtkinlikOlusturHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinlikOlusturRequest>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinlikOlusturRequest>
     {
         public async Task Handle(EtkinlikOlusturRequest request, CancellationToken cancellationToken)
         {
             if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanici Bulunamadi.");
-
-            Etkinlik etkinlikOlustur = _mapper.Map<Etkinlik>(request);
-            etkinlikOlustur.OlusturanKullaniciId = mevcutKullaniciId;
 
             if (request.BitisTarihi < request.BaslangicTarihi) throw new Exception("Tarih Doğrulanamdı.");
 
@@ -30,6 +25,15 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur
 
             if (exist) throw new Exception("Girilen Tarih Araliginda Etkinlik Kaydi Bulunmaktadir.");
 
+            Etkinlik etkinlikOlustur = new()
+            {
+                Baslik = request.Baslik,
+                Aciklama = request.Aciklama,
+                BaslangicTarihi = request.BaslangicTarihi,
+                BitisTarihi = request.BitisTarihi,
+                TekrarDurumu = request.TekrarDurumu,
+                OlusturanKullaniciId = mevcutKullaniciId
+            };
             await _calenderAppDbContext.Etkinliks.AddAsync(etkinlikOlustur, cancellationToken);
             await _calenderAppDbContext.SaveChangesAsync(cancellationToken);
         }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -10,9 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciAylikEtkinlikGetir
 {
     public class KullaniciAylikEtkinlikGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciAylikEtkinlikGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciAylikEtkinlikGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
     {
         public async Task<IList<KullaniciEtkinligiGetirResponse>> Handle(KullaniciAylikEtkinlikGetirRequest request, CancellationToken cancellationToken)
         {
@@ -20,14 +18,27 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciAylikEtk
 
             List<Etkinlik>? etkinlikler = await _calenderAppDbContext.Etkinliks
                 .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId &&
-                            e.BaslangicTarihi.Month == request.Tarih.Month &&
-                            e.BaslangicTarihi.Year == request.Tarih.Year)
+                            e.BaslangicTarihi.Month <= request.Tarih.Month &&
+                            e.BitisTarihi.Month >= request.Tarih.Month &&
+                            e.BaslangicTarihi.Year <= request.Tarih.Year &&
+                            e.BitisTarihi.Year >= request.Tarih.Year)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (!etkinlikler.Any()) throw new Exception("İstenen Ay'a Ait Kullanıcı Etkinliği Bulunamadı.");
+            if (etkinlikler.Count == 0) throw new Exception("İstenen Ay'a Ait Kullanıcı Etkinliği Bulunamadı.");
 
-            return _mapper.Map<IList<KullaniciEtkinligiGetirResponse>>(etkinlikler);
+            IList<KullaniciEtkinligiGetirResponse> response = etkinlikler.Select(e => new KullaniciEtkinligiGetirResponse
+            {
+                Id = e.Id,
+                Baslik = e.Baslik,
+                Aciklama = e.Aciklama,
+                BaslangicTarihi = e.BaslangicTarihi,
+                BitisTarihi = e.BitisTarihi,
+                TekrarDurumu = e.TekrarDurumu,
+            }).ToList();
+
+            return response;
         }
     }
+
 }

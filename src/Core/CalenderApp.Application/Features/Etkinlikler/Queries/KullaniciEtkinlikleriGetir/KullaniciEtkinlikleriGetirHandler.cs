@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -10,9 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlikleriGetir
 {
     public class KullaniciEtkinlikleriGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinlikleriGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinlikleriGetirRequest, IList<KullaniciEtkinligiGetirResponse>>
     {
         public async Task<IList<KullaniciEtkinligiGetirResponse>> Handle(KullaniciEtkinlikleriGetirRequest request, CancellationToken cancellationToken)
         {
@@ -25,7 +23,17 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlik
 
             if (!kullaniciEtkinlikleri.Any()) throw new Exception("Kullanıcı Etkinliği Bulunamdı.");
 
-            return _mapper.Map<IList<KullaniciEtkinligiGetirResponse>>(kullaniciEtkinlikleri);
+            IList<KullaniciEtkinligiGetirResponse> response = kullaniciEtkinlikleri.Select(e => new KullaniciEtkinligiGetirResponse
+            {
+                Id = e.Id,
+                Baslik = e.Baslik,
+                Aciklama = e.Aciklama,
+                BaslangicTarihi = e.BaslangicTarihi,
+                BitisTarihi = e.BitisTarihi,
+                TekrarDurumu = e.TekrarDurumu
+            }).ToList();
+
+            return response;
         }
     }
 }

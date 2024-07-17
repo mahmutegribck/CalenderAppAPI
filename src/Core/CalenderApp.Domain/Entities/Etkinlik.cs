@@ -18,7 +18,7 @@ namespace CalenderApp.Domain.Entities
         public DateTime BitisTarihi { get; set; }
         public TekrarEnum TekrarDurumu { get; set; }
 
-        public required Kullanici OlusturanKullanici { get; set; }
+        public Kullanici OlusturanKullanici { get; set; }
         public required string OlusturanKullaniciId { get; set; }
 
         public ICollection<KullaniciEtkinlik> KatilanKullanicilar { get; set; }

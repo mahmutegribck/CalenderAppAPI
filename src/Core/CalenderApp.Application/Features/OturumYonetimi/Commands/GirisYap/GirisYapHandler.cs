@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Interfaces.Tokens;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -13,9 +12,8 @@ namespace CalenderApp.Application.Features.OturumYonetimi.Commands.GirisYap
 {
     public class GirisYapHandler(
         IJwtServisi jwtServisi,
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<GirisYapRequest, GirisYapResponse>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<GirisYapRequest, GirisYapResponse>
     {
         private readonly IJwtServisi _jwtServisi = jwtServisi;
 

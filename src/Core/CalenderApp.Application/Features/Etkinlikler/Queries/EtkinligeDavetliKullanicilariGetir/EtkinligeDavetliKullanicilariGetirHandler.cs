@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -9,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Queries.EtkinligeDavetliKullanicilariGetir
 {
     public class EtkinligeDavetliKullanicilariGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinligeDavetliKullanicilariGetirRequest, IList<EtkinligeDavetliKullanicilariGetirResponse>>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<EtkinligeDavetliKullanicilariGetirRequest, IList<EtkinligeDavetliKullanicilariGetirResponse>>
     {
         public async Task<IList<EtkinligeDavetliKullanicilariGetirResponse>> Handle(EtkinligeDavetliKullanicilariGetirRequest request, CancellationToken cancellationToken)
         {
@@ -25,7 +23,16 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.EtkinligeDavetliK
 
             if (kullanicilar.Count == 0) throw new Exception("Etkinliğe Davetli Kullanıcı Bulunamadı.");
 
-            return _mapper.Map<IList<EtkinligeDavetliKullanicilariGetirResponse>>(kullanicilar);
+
+            IList<EtkinligeDavetliKullanicilariGetirResponse> response = kullanicilar.Select(e => new EtkinligeDavetliKullanicilariGetirResponse
+            {
+                Id = e.Id,
+                KullaniciAdi = e.KullaniciAdi,
+                Isim = e.Isim,
+                Soyisim= e.Soyisim,
+            }).ToList();
+
+            return response;
         }
     }
 }

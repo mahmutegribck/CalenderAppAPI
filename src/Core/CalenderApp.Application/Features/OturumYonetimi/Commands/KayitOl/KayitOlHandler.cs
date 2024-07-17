@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -11,9 +10,8 @@ using System.Text;
 namespace CalenderApp.Application.Features.OturumYonetimi.Commands.KayitOl
 {
     public class KayitOlHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<KayitOlRequest>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KayitOlRequest>
     {
         public async Task Handle(KayitOlRequest request, CancellationToken cancellationToken)
         {
@@ -34,12 +32,19 @@ namespace CalenderApp.Application.Features.OturumYonetimi.Commands.KayitOl
 
                 request.KullaniciAdi = request.KullaniciAdi.Trim().ToLower();
 
-                Kullanici yeniKullanici = _mapper.Map<Kullanici>(request);
+                Kullanici yeniKullanici = new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    KullaniciAdi = request.KullaniciAdi,
+                    Isim = request.Isim,
+                    Soyisim = request.Soyisim,
+                    KullaniciSifresi = request.KullaniciSifresi
+
+                };
 
                 var byteArray = Encoding.Default.GetBytes(yeniKullanici.KullaniciSifresi);
                 var hashedSifre = Convert.ToBase64String(SHA256.HashData(byteArray));
 
-                yeniKullanici.Id = Guid.NewGuid().ToString();
                 yeniKullanici.KullaniciSifresi = hashedSifre;
 
                 await _calenderAppDbContext.Kullanicis.AddAsync(yeniKullanici, cancellationToken);

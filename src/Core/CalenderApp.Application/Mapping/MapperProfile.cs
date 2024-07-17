@@ -2,7 +2,7 @@
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
-using CalenderApp.Application.Features.Etkinlikler.Queries.EklenenEtkinlikleriGetir;
+using CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlikleriGetir;
 using CalenderApp.Application.Features.Etkinlikler.Queries.EtkinligeDavetliKullanicilariGetir;
 using CalenderApp.Application.Features.Kullanicilar.Queries.MevcutKullaniciGetir;
 using CalenderApp.Application.Features.Kullanicilar.Queries.TumKullanicilariGetir;
@@ -20,7 +20,7 @@ namespace CalenderApp.Application.Mapping
 
             CreateMap<Kullanici, EtkinligeDavetliKullanicilariGetirResponse>().ReverseMap();
             CreateMap<Etkinlik, KullaniciEtkinligiGetirResponse>().ReverseMap();
-            CreateMap<Etkinlik, EklenenEtkinlikleriGetirResponse>()
+            CreateMap<Etkinlik, EklenilenEtkinlikleriGetirResponse>()
                 .ForMember(dest => dest.EkleyenKullaniciId, opt => opt.MapFrom(src => src.OlusturanKullaniciId))
                 .ForMember(dest => dest.EkleyenKullaniciAdi, opt => opt.MapFrom(src => src.OlusturanKullanici.KullaniciAdi));
 

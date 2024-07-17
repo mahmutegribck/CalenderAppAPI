@@ -1,8 +1,8 @@
 ﻿using CalenderApp.Domain.Enums;
 
-namespace CalenderApp.Application.Features.Etkinlikler.Queries.EklenenEtkinlikleriGetir
+namespace CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlikleriGetir
 {
-    public class EklenenEtkinlikleriGetirResponse
+    public class EklenilenEtkinlikleriGetirResponse
     {
         public int Id { get; set; }
         public required string Baslik { get; set; }

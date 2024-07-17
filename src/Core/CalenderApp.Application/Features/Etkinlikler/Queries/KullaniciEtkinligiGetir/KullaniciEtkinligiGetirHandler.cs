@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -10,9 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinligiGetir
 {
     public class KullaniciEtkinligiGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinligiGetirRequest, KullaniciEtkinligiGetirResponse>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinligiGetirRequest, KullaniciEtkinligiGetirResponse>
     {
         public async Task<KullaniciEtkinligiGetirResponse> Handle(KullaniciEtkinligiGetirRequest request, CancellationToken cancellationToken)
         {
@@ -21,11 +19,19 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlig
             Etkinlik? kullaniciEtkinligi = await _calenderAppDbContext.Etkinliks
                 .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Kullanıcı Etkinlikleri Bulunumadı.");
 
-            if (kullaniciEtkinligi == null) throw new Exception("Kullanıcı Etkinlikleri Bulunumadı.");
+            KullaniciEtkinligiGetirResponse response = new()
+            {
+                Id = kullaniciEtkinligi.Id,
+                Baslik = kullaniciEtkinligi.Baslik,
+                Aciklama = kullaniciEtkinligi.Aciklama,
+                BaslangicTarihi = kullaniciEtkinligi.BaslangicTarihi,
+                BitisTarihi = kullaniciEtkinligi.BitisTarihi,
+                TekrarDurumu = kullaniciEtkinligi.TekrarDurumu
+            };
 
-            return _mapper.Map<KullaniciEtkinligiGetirResponse>(kullaniciEtkinligi);
+            return response;
         }
     }
 }

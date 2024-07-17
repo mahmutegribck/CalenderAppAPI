@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CalenderApp.Application.Bases;
+﻿using CalenderApp.Application.Bases;
 using CalenderApp.Persistence.Context;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CalenderApp.Application.Features.Kullanicilar.Queries.TumKullanicilariGetir
 {
     public class TumKullanicilariGetirHandler(
-        IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(mapper, httpContextAccessor, calenderAppDbContext), IRequestHandler<TumKullanicilariGetirRequest, IList<TumKullanicilariGetirResponse>>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<TumKullanicilariGetirRequest, IList<TumKullanicilariGetirResponse>>
     {
         public async Task<IList<TumKullanicilariGetirResponse>> Handle(TumKullanicilariGetirRequest request, CancellationToken cancellationToken)
         {
@@ -20,8 +18,15 @@ namespace CalenderApp.Application.Features.Kullanicilar.Queries.TumKullanicilari
 
             if (kullanicilar.Count == 0) throw new Exception("Kullanici Bulunamadi.");
 
-            return _mapper.Map<IList<TumKullanicilariGetirResponse>>(kullanicilar);
+            IList<TumKullanicilariGetirResponse> response = kullanicilar.Select(k => new TumKullanicilariGetirResponse
+            {
+                Id = k.Id,
+                KullaniciAdi = k.KullaniciAdi,
+                Isim = k.Isim,
+                Soyisim = k.Soyisim,
+            }).ToList();
 
+            return response;
         }
     }
 }

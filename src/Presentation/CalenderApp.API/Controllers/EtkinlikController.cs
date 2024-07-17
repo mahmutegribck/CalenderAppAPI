@@ -3,7 +3,7 @@ using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikSil;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinliktenDavetliKullanicilariSil;
-using CalenderApp.Application.Features.Etkinlikler.Queries.EklenenEtkinlikleriGetir;
+using CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlikleriGetir;
 using CalenderApp.Application.Features.Etkinlikler.Queries.EtkinligeDavetliKullanicilariGetir;
 using CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciAylikEtkinlikGetir;
 using CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinligiGetir;
@@ -99,9 +99,9 @@ namespace CalenderApp.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> EklenenEtkinlikleriGetir(CancellationToken cancellationToken)
+        public async Task<IActionResult> EklenilenEtkinlikleriGetir(CancellationToken cancellationToken)
         {
-            var response = await mediator.Send(new EklenenEtkinlikleriGetirRequest(), cancellationToken);
+            var response = await mediator.Send(new EklenilenEtkinlikleriGetirRequest(), cancellationToken);
             return Ok(response);
         }
 
