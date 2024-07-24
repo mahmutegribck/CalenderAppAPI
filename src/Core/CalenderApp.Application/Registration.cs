@@ -1,6 +1,4 @@
-﻿using CalenderApp.Application.Behaviors;
-using FluentValidation;
-using MediatR;
+﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -18,7 +16,7 @@ namespace CalenderApp.Application
 
             services.AddValidatorsFromAssembly(assembly);
 
-            
+
 
             //services.AddAutoMapper(Assembly.GetExecutingAssembly());
 

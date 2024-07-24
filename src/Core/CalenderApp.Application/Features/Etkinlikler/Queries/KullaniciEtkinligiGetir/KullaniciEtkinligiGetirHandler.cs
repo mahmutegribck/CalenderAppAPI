@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -14,12 +15,12 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlig
     {
         public async Task<KullaniciEtkinligiGetirResponse> Handle(KullaniciEtkinligiGetirRequest request, CancellationToken cancellationToken)
         {
-            if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanıcı Bulunamadı.");
+            if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanıcı Bulunamadı.");
 
             Etkinlik? kullaniciEtkinligi = await _calenderAppDbContext.Etkinliks
                 .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("Kullanıcı Etkinlikleri Bulunumadı.");
+                .FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Kullanıcı Etkinlikleri Bulunumadı.");
 
             KullaniciEtkinligiGetirResponse response = new()
             {

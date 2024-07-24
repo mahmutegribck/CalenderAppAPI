@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -13,7 +14,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinliktenDavet
     {
         public async Task Handle(EtkinliktenDavetliKullanicilariSilRequest request, CancellationToken cancellationToken)
         {
-            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.EtkinlikId && e.OlusturanKullaniciId == mevcutKullaniciId, cancellationToken)) throw new Exception("Kullanıcını Kayıtlı Etkinliği Bulunamadı.");
+            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.EtkinlikId && e.OlusturanKullaniciId == mevcutKullaniciId, cancellationToken)) throw new NotFoundException("Kullanıcını Kayıtlı Etkinliği Bulunamadı.");
 
             List<KullaniciEtkinlik> kullaniciEtkinlikListesi = new();
 
@@ -25,7 +26,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinliktenDavet
                     kullaniciEtkinlikListesi.Add(kullaniciEtkinlik);
                 }
             }
-            if (kullaniciEtkinlikListesi.Count == 0) throw new Exception("Etkinlikten Silinecek Kullanıcı Bulunamadı.");
+            if (kullaniciEtkinlikListesi.Count == 0) throw new NotFoundException("Etkinlikten Silinecek Kullanıcı Bulunamadı.");
             _calenderAppDbContext.KullaniciEtkinliks.RemoveRange(kullaniciEtkinlikListesi);
             await _calenderAppDbContext.SaveChangesAsync(cancellationToken);
         }

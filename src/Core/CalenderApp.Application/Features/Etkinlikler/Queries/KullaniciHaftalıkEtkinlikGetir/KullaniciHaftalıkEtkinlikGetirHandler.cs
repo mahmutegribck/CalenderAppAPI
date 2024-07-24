@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Application.Features.Etkinlikler.Queries.Bases;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
@@ -15,7 +16,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalı
     {
         public async Task<IList<KullaniciEtkinligiGetirResponse>> Handle(KullaniciHaftalikEtkinlikGetirRequest request, CancellationToken cancellationToken)
         {
-            if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanıcı Bulunamadı.");
+            if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanıcı Bulunamadı.");
 
             var culture = CultureInfo.InvariantCulture;
             Calendar calendar = culture.Calendar;
@@ -31,7 +32,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalı
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (etkinlikler.Count == 0) throw new Exception("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
+            if (etkinlikler.Count == 0) throw new NotFoundException("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
 
             List<Etkinlik> filteredEtkinlikler = etkinlikler
                 .Where(e => calendar.GetWeekOfYear(e.BaslangicTarihi, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == haftaNo ||
@@ -39,7 +40,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalı
                             (e.BaslangicTarihi <= request.Tarih && e.BitisTarihi >= request.Tarih))
                 .ToList();
 
-            if (filteredEtkinlikler.Count == 0) throw new Exception("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
+            if (filteredEtkinlikler.Count == 0) throw new NotFoundException("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
 
             IList<KullaniciEtkinligiGetirResponse> response = filteredEtkinlikler.Select(e => new KullaniciEtkinligiGetirResponse
             {

@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -13,7 +14,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullani
     {
         public async Task Handle(EtkinligeKullaniciEkleRequest request, CancellationToken cancellationToken)
         {
-            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId, cancellationToken)) throw new Exception("Kullanıcını Kayıtlı Etkinliği Bulunamadı.");
+            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId, cancellationToken)) throw new NotFoundException("Kullanıcının Kayıtlı Etkinliği Bulunamadı.");
             List<KullaniciEtkinlik> kullaniciEtkinlikListesi = new();
 
             foreach (var kullaniciId in request.KullaniciIds)

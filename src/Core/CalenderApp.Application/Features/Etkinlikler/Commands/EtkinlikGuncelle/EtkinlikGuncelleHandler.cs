@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Domain.Enums;
 using CalenderApp.Persistence.Context;
@@ -14,9 +15,9 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle
     {
         public async Task Handle(EtkinlikGuncelleRequest request, CancellationToken cancellationToken)
         {
-            if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanici Bulunamadi.");
+            if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanici Bulunamadi.");
 
-            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.Id, cancellationToken)) throw new Exception("Güncellenmek İstenene Etkinlik Bulunamadı.");
+            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.Id, cancellationToken)) throw new NotFoundException("Güncellenmek İstenene Etkinlik Bulunamadı.");
 
             if (request.BitisTarihi < request.BaslangicTarihi) throw new Exception("Tarih Doğrulanamdı.");
 
@@ -39,7 +40,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle
                 OlusturanKullaniciId = mevcutKullaniciId
             };
 
-            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.Id && e.OlusturanKullaniciId == mevcutKullaniciId, cancellationToken)) throw new Exception("Guncellenecek Etkinlik Kaydi Bulunamadi.");
+            if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.Id == request.Id && e.OlusturanKullaniciId == mevcutKullaniciId, cancellationToken)) throw new NotFoundException("Guncellenecek Etkinlik Kaydi Bulunamadi.");
 
             _calenderAppDbContext.Update(etkinlikGuncelle);
             await _calenderAppDbContext.SaveChangesAsync(cancellationToken);

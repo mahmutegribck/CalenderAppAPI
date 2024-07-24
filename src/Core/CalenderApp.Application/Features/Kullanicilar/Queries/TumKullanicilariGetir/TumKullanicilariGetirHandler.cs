@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Persistence.Context;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -12,11 +13,11 @@ namespace CalenderApp.Application.Features.Kullanicilar.Queries.TumKullanicilari
     {
         public async Task<IList<TumKullanicilariGetirResponse>> Handle(TumKullanicilariGetirRequest request, CancellationToken cancellationToken)
         {
-            if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanici Bulunamadi.");
+            if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanıcı Bulunamadı.");
 
             var kullanicilar = await _calenderAppDbContext.Kullanicis.Where(k => k.Id != mevcutKullaniciId).ToListAsync(cancellationToken);
 
-            if (kullanicilar.Count == 0) throw new Exception("Kullanici Bulunamadi.");
+            if (kullanicilar.Count == 0) throw new NotFoundException("Kullanıcı Bulunamadı.");
 
             IList<TumKullanicilariGetirResponse> response = kullanicilar.Select(k => new TumKullanicilariGetirResponse
             {

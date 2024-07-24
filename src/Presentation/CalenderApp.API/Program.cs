@@ -1,10 +1,9 @@
 using CalenderApp.Application;
-using CalenderApp.Application.Behaviors;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Infrastructure;
 using CalenderApp.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -20,10 +19,12 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddApplication();
 
@@ -66,6 +67,7 @@ builder.Services.AddSwaggerGen(swagger =>
 
 var app = builder.Build();
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,6 +82,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();

@@ -1,4 +1,5 @@
 ﻿using CalenderApp.Application.Bases;
+using CalenderApp.Application.Exceptions;
 using CalenderApp.Domain.Entities;
 using CalenderApp.Persistence.Context;
 using MediatR;
@@ -13,7 +14,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlik
     {
         public async Task<IList<EklenilenEtkinlikleriGetirResponse>> Handle(EklenilenEtkinlikleriGetirRequest request, CancellationToken cancellationToken)
         {
-            if (mevcutKullaniciId == null) throw new Exception("Mevcut Kullanıcı Bulunamadı.");
+            if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanıcı Bulunamadı.");
 
             IList<Etkinlik> eklenenEtkinlikler = await _calenderAppDbContext.KullaniciEtkinliks
                 .Where(e => e.KullaniciId == mevcutKullaniciId)
@@ -22,7 +23,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlik
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (!eklenenEtkinlikler.Any()) throw new Exception("Eklenen Etkinlik Bulunamadı");
+            if (!eklenenEtkinlikler.Any()) throw new NotFoundException("Eklenen Etkinlik Bulunamadı");
 
             IList<EklenilenEtkinlikleriGetirResponse> response = eklenenEtkinlikler.Select(e => new EklenilenEtkinlikleriGetirResponse
             {
