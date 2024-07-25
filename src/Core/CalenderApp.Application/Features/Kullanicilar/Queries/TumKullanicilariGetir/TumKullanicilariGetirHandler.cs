@@ -17,8 +17,6 @@ namespace CalenderApp.Application.Features.Kullanicilar.Queries.TumKullanicilari
 
             var kullanicilar = await _calenderAppDbContext.Kullanicis.Where(k => k.Id != mevcutKullaniciId).ToListAsync(cancellationToken);
 
-            if (kullanicilar.Count == 0) throw new NotFoundException("Kullanıcı Bulunamadı.");
-
             IList<TumKullanicilariGetirResponse> response = kullanicilar.Select(k => new TumKullanicilariGetirResponse
             {
                 Id = k.Id,

@@ -26,8 +26,6 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciAylikEtk
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (etkinlikler.Count == 0) throw new NotFoundException("İstenen Ay'a Ait Kullanıcı Etkinliği Bulunamadı.");
-
             IList<KullaniciEtkinligiGetirResponse> response = etkinlikler.Select(e => new KullaniciEtkinligiGetirResponse
             {
                 Id = e.Id,

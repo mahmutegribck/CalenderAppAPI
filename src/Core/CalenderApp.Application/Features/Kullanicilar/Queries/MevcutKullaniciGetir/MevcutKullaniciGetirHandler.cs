@@ -18,8 +18,8 @@ namespace CalenderApp.Application.Features.Kullanicilar.Queries.MevcutKullaniciG
 
             Kullanici? mevcutKullanici = await _calenderAppDbContext.Kullanicis
                 .Where(k => k.Id == mevcutKullaniciId)
-                .FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Kullanıcı Bulunamadı.");
-         
+                .FirstOrDefaultAsync(cancellationToken);
+
             MevcutKullaniciGetirResponse response = new()
             {
                 Id = mevcutKullanici.Id,

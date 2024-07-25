@@ -11,16 +11,19 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlig
 {
     public class KullaniciEtkinligiGetirHandler(
         IHttpContextAccessor httpContextAccessor,
-        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinligiGetirRequest, KullaniciEtkinligiGetirResponse>
+        CalenderAppDbContext calenderAppDbContext) : BaseHandler(httpContextAccessor, calenderAppDbContext), IRequestHandler<KullaniciEtkinligiGetirRequest, KullaniciEtkinligiGetirResponse?>
     {
-        public async Task<KullaniciEtkinligiGetirResponse> Handle(KullaniciEtkinligiGetirRequest request, CancellationToken cancellationToken)
+        public async Task<KullaniciEtkinligiGetirResponse?> Handle(KullaniciEtkinligiGetirRequest request, CancellationToken cancellationToken)
         {
             if (mevcutKullaniciId == null) throw new NotFoundException("Mevcut Kullanıcı Bulunamadı.");
 
             Etkinlik? kullaniciEtkinligi = await _calenderAppDbContext.Etkinliks
                 .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Kullanıcı Etkinlikleri Bulunumadı.");
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (kullaniciEtkinligi == null)
+                return null;
 
             KullaniciEtkinligiGetirResponse response = new()
             {

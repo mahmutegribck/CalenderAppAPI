@@ -32,15 +32,15 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciHaftalı
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (etkinlikler.Count == 0) throw new NotFoundException("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
-
-            List<Etkinlik> filteredEtkinlikler = etkinlikler
+            List<Etkinlik> filteredEtkinlikler = [];
+            if (etkinlikler.Count != 0)
+            {
+                filteredEtkinlikler = etkinlikler
                 .Where(e => calendar.GetWeekOfYear(e.BaslangicTarihi, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == haftaNo ||
                             calendar.GetWeekOfYear(e.BitisTarihi, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday) == haftaNo ||
                             (e.BaslangicTarihi <= request.Tarih && e.BitisTarihi >= request.Tarih))
                 .ToList();
-
-            if (filteredEtkinlikler.Count == 0) throw new NotFoundException("İstenen Haftaya Ait Kullanici Etkinliği Bulunamadı.");
+            }
 
             IList<KullaniciEtkinligiGetirResponse> response = filteredEtkinlikler.Select(e => new KullaniciEtkinligiGetirResponse
             {

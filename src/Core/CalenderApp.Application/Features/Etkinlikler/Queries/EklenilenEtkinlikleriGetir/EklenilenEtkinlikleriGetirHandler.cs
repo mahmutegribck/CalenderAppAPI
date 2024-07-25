@@ -23,8 +23,6 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.EklenilenEtkinlik
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (!eklenenEtkinlikler.Any()) throw new NotFoundException("Eklenen Etkinlik Bulunamadı");
-
             IList<EklenilenEtkinlikleriGetirResponse> response = eklenenEtkinlikler.Select(e => new EklenilenEtkinlikleriGetirResponse
             {
                 Id = e.Id,

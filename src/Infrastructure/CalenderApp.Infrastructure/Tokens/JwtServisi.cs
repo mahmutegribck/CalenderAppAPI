@@ -25,7 +25,7 @@ namespace CalenderApp.Infrastructure.Tokens
                 Subject = new ClaimsIdentity(claims),
                 Audience = configuration["Jwt:Audience"],
                 Issuer = configuration["Jwt:Issuer"],
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(
                     key,
                     SecurityAlgorithms.HmacSha256Signature

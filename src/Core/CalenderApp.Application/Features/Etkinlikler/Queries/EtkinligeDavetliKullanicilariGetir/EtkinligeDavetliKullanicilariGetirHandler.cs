@@ -22,9 +22,6 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.EtkinligeDavetliK
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (kullanicilar.Count == 0) throw new NotFoundException("Etkinliğe Davetli Kullanıcı Bulunamadı.");
-
-
             IList<EtkinligeDavetliKullanicilariGetirResponse> response = kullanicilar.Select(e => new EtkinligeDavetliKullanicilariGetirResponse
             {
                 Id = e.Id,

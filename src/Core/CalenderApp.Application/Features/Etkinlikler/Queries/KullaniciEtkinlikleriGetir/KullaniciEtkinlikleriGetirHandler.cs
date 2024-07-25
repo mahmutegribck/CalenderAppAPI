@@ -22,8 +22,6 @@ namespace CalenderApp.Application.Features.Etkinlikler.Queries.KullaniciEtkinlik
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            if (!kullaniciEtkinlikleri.Any()) throw new NotFoundException("Kullanıcı Etkinliği Bulunamdı.");
-
             IList<KullaniciEtkinligiGetirResponse> response = kullaniciEtkinlikleri.Select(e => new KullaniciEtkinligiGetirResponse
             {
                 Id = e.Id,
