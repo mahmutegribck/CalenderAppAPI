@@ -17,14 +17,14 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullani
             if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId, cancellationToken)) throw new NotFoundException("Kullanıcının Kayıtlı Etkinliği Bulunamadı.");
             List<KullaniciEtkinlik> kullaniciEtkinlikListesi = new();
 
-            foreach (var kullaniciId in request.KullaniciIds)
+            foreach (var kullaniciId in request.KullaniciAdlari)
             {
-
-                if (await _calenderAppDbContext.Kullanicis.AnyAsync(k => k.Id == kullaniciId, cancellationToken))
+                var kullanici = await _calenderAppDbContext.Kullanicis.Where(k => k.KullaniciAdi == kullaniciId).FirstAsync(cancellationToken);
+                if (kullanici != null)
                 {
                     KullaniciEtkinlik kullaniciEtkinlik = new()
                     {
-                        KullaniciId = kullaniciId,
+                        KullaniciId = kullanici.Id,
                         EtkinlikId = request.EtkinlikId
                     };
                     kullaniciEtkinlikListesi.Add(kullaniciEtkinlik);

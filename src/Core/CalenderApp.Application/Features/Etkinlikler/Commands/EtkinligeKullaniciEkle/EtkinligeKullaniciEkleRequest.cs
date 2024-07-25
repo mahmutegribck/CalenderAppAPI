@@ -6,7 +6,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullani
     public class EtkinligeKullaniciEkleRequest : IRequest
     {
         public int EtkinlikId { get; set; }
-        public required List<string> KullaniciIds { get; set; }
+        public required List<string> KullaniciAdlari { get; set; }
     }
 
 
@@ -18,10 +18,10 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullani
                 .NotEmpty().WithMessage("Etkinlik Id Boş Olamaz.")
                 .GreaterThanOrEqualTo(0).WithMessage("Etkinlik Id 0'dan küçük olamaz.");
 
-            RuleFor(e => e.KullaniciIds)
-                .NotEmpty().WithMessage("Kullanici Ids Boş Olamaz.")
+            RuleFor(e => e.KullaniciAdlari)
+                .NotEmpty().WithMessage("Kullanici Adlari Boş Olamaz.")
                 .Must(ids => ids.All(id => !string.IsNullOrWhiteSpace(id)))
-                .WithMessage("Kullanici Ids içinde boş veya sadece boşluk karakterleri içeremez.");
+                .WithMessage("Kullanici adlari içinde boş veya sadece boşluk karakterleri içeremez.");
 
         }
     }
