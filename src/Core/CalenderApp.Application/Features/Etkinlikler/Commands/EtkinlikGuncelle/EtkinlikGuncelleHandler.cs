@@ -1,7 +1,6 @@
 ﻿using CalenderApp.Application.Bases;
 using CalenderApp.Application.Exceptions;
 using CalenderApp.Domain.Entities;
-using CalenderApp.Domain.Enums;
 using CalenderApp.Persistence.Context;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +20,29 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle
 
             if (request.BitisTarihi < request.BaslangicTarihi) throw new Exception("Tarih Doğrulanamdı.");
 
-            var exist = await _calenderAppDbContext.Etkinliks
-                .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id != request.Id)
-                .AnyAsync(e =>
-                (e.BaslangicTarihi >= request.BaslangicTarihi && (e.BitisTarihi <= request.BitisTarihi || request.BitisTarihi < e.BitisTarihi) && e.BaslangicTarihi <= request.BitisTarihi) ||
-                (e.BaslangicTarihi <= request.BaslangicTarihi && (e.BitisTarihi < request.BitisTarihi || request.BitisTarihi <= e.BitisTarihi) && request.BaslangicTarihi <= e.BitisTarihi), cancellationToken);
+            //var exist = await _calenderAppDbContext.Etkinliks
+            //    .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id != request.Id)
+            //    .AnyAsync(e =>
+            //    (e.BaslangicTarihi >= request.BaslangicTarihi && (e.BitisTarihi <= request.BitisTarihi || request.BitisTarihi < e.BitisTarihi) && e.BaslangicTarihi <= request.BitisTarihi) ||
+            //    (e.BaslangicTarihi <= request.BaslangicTarihi && (e.BitisTarihi < request.BitisTarihi || request.BitisTarihi <= e.BitisTarihi) && request.BaslangicTarihi <= e.BitisTarihi), cancellationToken);
 
-            if (exist) throw new Exception("Girilen Tarih Araliginda Etkinlik Kaydi Bulunmaktadir.");
+
+            var mevcutEtkinlik = await _calenderAppDbContext.Etkinliks
+                    .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId)
+                    .AnyAsync(e =>
+                        (e.BaslangicTarihi.Date == request.BaslangicTarihi.Date && e.BitisTarihi.Date == request.BitisTarihi.Date &&
+                        ((e.BaslangicTarihi.TimeOfDay < request.BaslangicTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay > request.BaslangicTarihi.TimeOfDay) ||
+                         (e.BaslangicTarihi.TimeOfDay < request.BitisTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay > request.BitisTarihi.TimeOfDay) ||
+                         (e.BaslangicTarihi.TimeOfDay >= request.BaslangicTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay <= request.BitisTarihi.TimeOfDay))) ||
+                        (e.BaslangicTarihi.Date == request.BaslangicTarihi.Date && e.BitisTarihi.Date != request.BitisTarihi.Date &&
+                        e.BaslangicTarihi.TimeOfDay < request.BaslangicTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay > request.BaslangicTarihi.TimeOfDay) ||
+                        (e.BaslangicTarihi.Date != request.BaslangicTarihi.Date && e.BitisTarihi.Date == request.BitisTarihi.Date &&
+                        e.BaslangicTarihi.TimeOfDay < request.BitisTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay > request.BitisTarihi.TimeOfDay) ||
+                        (e.BaslangicTarihi.Date != request.BaslangicTarihi.Date && e.BitisTarihi.Date != request.BitisTarihi.Date &&
+                        e.BaslangicTarihi.TimeOfDay >= request.BaslangicTarihi.TimeOfDay && e.BitisTarihi.TimeOfDay <= request.BitisTarihi.TimeOfDay),
+                    cancellationToken);
+
+            if (mevcutEtkinlik) throw new Exception("Girilen Tarih Araliginda Etkinlik Kaydi Bulunmaktadir.");
 
             Etkinlik etkinlikGuncelle = new()
             {

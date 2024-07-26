@@ -15,19 +15,21 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullani
         public async Task Handle(EtkinligeKullaniciEkleRequest request, CancellationToken cancellationToken)
         {
             if (!await _calenderAppDbContext.Etkinliks.AnyAsync(e => e.OlusturanKullaniciId == mevcutKullaniciId && e.Id == request.EtkinlikId, cancellationToken)) throw new NotFoundException("Kullanıcının Kayıtlı Etkinliği Bulunamadı.");
-            List<KullaniciEtkinlik> kullaniciEtkinlikListesi = new();
+            List<KullaniciEtkinlik> kullaniciEtkinlikListesi = [];
 
-            foreach (var kullaniciId in request.KullaniciAdlari)
+            foreach (var kullaniciId in request.KullaniciIds)
             {
-                var kullanici = await _calenderAppDbContext.Kullanicis.Where(k => k.KullaniciAdi == kullaniciId).FirstAsync(cancellationToken);
-                if (kullanici != null)
+                if (await _calenderAppDbContext.Kullanicis.AnyAsync(k => k.Id == kullaniciId, cancellationToken))
                 {
-                    KullaniciEtkinlik kullaniciEtkinlik = new()
+                    if (!await _calenderAppDbContext.KullaniciEtkinliks.AnyAsync(k => k.KullaniciId == kullaniciId && k.EtkinlikId == request.EtkinlikId, cancellationToken))
                     {
-                        KullaniciId = kullanici.Id,
-                        EtkinlikId = request.EtkinlikId
-                    };
-                    kullaniciEtkinlikListesi.Add(kullaniciEtkinlik);
+                        KullaniciEtkinlik kullaniciEtkinlik = new()
+                        {
+                            KullaniciId = kullaniciId,
+                            EtkinlikId = request.EtkinlikId
+                        };
+                        kullaniciEtkinlikListesi.Add(kullaniciEtkinlik);
+                    }
                 }
             }
             await _calenderAppDbContext.KullaniciEtkinliks.AddRangeAsync(kullaniciEtkinlikListesi, cancellationToken);

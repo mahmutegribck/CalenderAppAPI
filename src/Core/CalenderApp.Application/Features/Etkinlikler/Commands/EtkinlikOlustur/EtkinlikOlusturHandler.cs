@@ -25,7 +25,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur
             //    (e.BaslangicTarihi <= request.BaslangicTarihi && (e.BitisTarihi < request.BitisTarihi || request.BitisTarihi <= e.BitisTarihi) && request.BaslangicTarihi <= e.BitisTarihi), cancellationToken);
 
 
-            var exist = await _calenderAppDbContext.Etkinliks
+            var mevcutEtkinlik = await _calenderAppDbContext.Etkinliks
                     .Where(e => e.OlusturanKullaniciId == mevcutKullaniciId)
                     .AnyAsync(e =>
                         (e.BaslangicTarihi.Date == request.BaslangicTarihi.Date && e.BitisTarihi.Date == request.BitisTarihi.Date &&
@@ -41,7 +41,7 @@ namespace CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur
                     cancellationToken);
 
 
-            if (exist) throw new Exception("Girilen Tarih Aralığında Etkinlik Kaydı Bulunmaktadır.");
+            if (mevcutEtkinlik) throw new Exception("Girilen Tarih Aralığında Etkinlik Kaydı Bulunmaktadır.");
 
             Etkinlik etkinlikOlustur = new()
             {
