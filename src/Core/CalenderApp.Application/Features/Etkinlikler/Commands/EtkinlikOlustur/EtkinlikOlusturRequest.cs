@@ -1,5 +1,4 @@
-﻿using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle;
-using CalenderApp.Domain.Enums;
+﻿using CalenderApp.Domain.Enums;
 using FluentValidation;
 using MediatR;
 

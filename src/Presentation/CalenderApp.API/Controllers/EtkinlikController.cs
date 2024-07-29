@@ -1,4 +1,5 @@
-﻿using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullaniciEkle;
+﻿using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeDavetliKullanicilariGuncelle;
+using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinligeKullaniciEkle;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikGuncelle;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikOlustur;
 using CalenderApp.Application.Features.Etkinlikler.Commands.EtkinlikSil;
@@ -65,6 +66,17 @@ namespace CalenderApp.API.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> EtkinliktenDavetliKullanicilariSil([FromBody] EtkinliktenDavetliKullanicilariSilRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null)
+                return BadRequest();
+
+            await mediator.Send(request, cancellationToken);
+            return Ok();
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> EtkinligeDavetliKullanicilariGuncelle([FromBody] EtkinligeDavetliKullanicilariGuncelleRequest request, CancellationToken cancellationToken)
         {
             if (request == null)
                 return BadRequest();

@@ -4,13 +4,14 @@ using CalenderApp.Infrastructure;
 using CalenderApp.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddHttpContextAccessor();
@@ -63,6 +64,16 @@ builder.Services.AddSwaggerGen(swagger =>
         }
     });
 });
+
+//builder.Services.AddOpenApiDocument(settings =>
+//{
+//    settings.PostProcess = document =>
+//    {
+//        document.Info.Version = "v1";
+//        document.Info.Title = "Example API";
+//        document.Info.Description = "REST API for example.";
+//    };
+//});
 
 
 var app = builder.Build();
